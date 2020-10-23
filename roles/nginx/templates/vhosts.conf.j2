@@ -7,18 +7,40 @@ upstream {{ upstream_group.name }} {
 {% if upstream_group.load_balancing_method is defined %}
     {{ upstream_group.load_balancing_method }};
 {% endif %}
-{% for upstream_server in upstream_group.servers %}
-    server {{ upstream_server.address }} 
-        weight={{ upstream_server.weight | default(1) }}
-{% if upstream_server.backup is defined and upstream_server.backup %}
-        backup
-{% endif %}
-{% if upstream_server.down is defined and upstream_server.down %}
-        down
-{% endif %}
-        max_fails={{ upstream_server.max_fails | default(1) }};
+
+{% if 'web' in group_names %}
+
+{% for host in groups['web'] %}
+    server {{ lookup('dig', host) }}
+        weight=1
+        #backup
+        #down
+        max_fails=1;
 {% endfor %}
+
+{% endif %}
+
+{% if 'saml2saml' in group_names %}
+{% for host in groups['saml2saml'] %}
+    server {{ lookup('dig', host) }}
+        weight=1
+        #backup
+        #down
+        max_fails=1;
+{% endfor %}
+{% endif %}
+{% if 'saml2oidc' in group_names %}
+{% for host in groups['saml2oidc'] %}
+    server {{ lookup('dig', host) }}:8080
+        weight=1
+        #backup
+        #down
+        max_fails=1;
+{% endfor %}
+{% endif %}
+
 }
+
 {% endfor %}
 {% for vhost in nginx_vhosts %}
 
