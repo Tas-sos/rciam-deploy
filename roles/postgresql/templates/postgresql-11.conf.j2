@@ -57,10 +57,18 @@ external_pid_file = '/var/run/postgresql/{{ postgresql_version }}-main.pid'			# 
 
 # - Connection Settings -
 
+{% if postgresql_listen_addresses is defined %}
 listen_addresses = '{{ postgresql_listen_addresses }}' # what IP address(es) to listen on;
 					# comma-separated list of addresses;
 					# defaults to 'localhost'; use '*' for all
 					# (change requires restart)
+{% elif "saml2saml" in groups %}
+listen_addresses = 'localhost {% for host in groups["saml2saml"] %}, {{ lookup('dig', host) }}'
+{% endfor %}
+{% else %}
+listen_addresses = 'localhost'
+{% endif %}
+
 port = {{ postgresql_port }}		# (change requires restart)
 max_connections = {{ postgresql_max_connections}} # (change requires restart)
 #superuser_reserved_connections = 3	# (change requires restart)
