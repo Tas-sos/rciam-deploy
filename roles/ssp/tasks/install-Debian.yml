@@ -16,6 +16,20 @@
   when: "'cron' in ssp_mods_enabled"
   become: true
 
+  # https://github.com/nodesource/distributions/blob/master/README.md#installation-instructions
+- name: Node.js LTS (v14.x) on Debian GNU/Linux
+  shell: "curl -sL https://deb.nodesource.com/setup_lts.x | bash -"
+  become: true
+
+- name: Install Node.js
+  apt:
+    name:
+      - nodejs
+      #- npm
+    state: latest
+  update_cache: yes
+  become: true
+
 #- name: Ensure memcached dependencies are installed (Debian)
 #  apt: pkg={{ item }} state=present install_recommends=no
 #  with_items: "{{ ssp_memcache_deps }}"

@@ -26,6 +26,18 @@
     creates: "{{ ssp_path }}/vendor/autoload.php"
   become: true
 
+- name: npm install
+  command: npm install
+  args:
+    chdir: "{{ ssp_path }}"
+  become: true
+
+- name: npm run build
+  command: npm run build
+  args:
+    chdir: "{{ ssp_path }}"
+  become: true
+
 - name: Ensure SSP config dir exists
   file: path={{ ssp_configdir }} state=directory
   become: yes
